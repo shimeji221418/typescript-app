@@ -6,6 +6,7 @@ import AuthProvider from "../provider/AuthProvider";
 import { useRouter } from "next/router";
 import { LoginUser } from "../components/templates/LoginUser";
 import { NotLoginUser } from "../components/templates/NotLoginUser";
+import { HeaderLayout } from "../components/templates/HeaderLayout";
 
 export default function App({ Component, pageProps }: AppProps) {
   const methods = useForm();
@@ -29,7 +30,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <NotLoginUser>
           <FormProvider {...methods}>
             <ChakraProvider theme={theme}>
-              <Component {...pageProps} />
+              <HeaderLayout>
+                <Component {...pageProps} />
+              </HeaderLayout>
             </ChakraProvider>
           </FormProvider>
         </NotLoginUser>
