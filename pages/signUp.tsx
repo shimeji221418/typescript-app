@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 import { app } from "../firebase";
 import { NextRouter, useRouter } from "next/router";
+import { signUpUser } from "../lib/api/user";
 
 const signUp = () => {
   const auth: Auth = getAuth(app);
@@ -39,7 +40,24 @@ const signUp = () => {
     [newUser, setNewUser]
   );
 
-  const handleonSubmit = async () => {
+  const handleonSubmit = () => {
+    const request = async () => {
+      await handleSignUp();
+      if (auth.currentUser) {
+        const token = await auth.currentUser.getIdToken(true);
+        const config = { token };
+        try {
+          await signUpUser(config);
+          router.push("/users");
+        } catch (e: any) {
+          console.log(e);
+        }
+      }
+    };
+    request();
+  };
+
+  const handleSignUp = async () => {
     try {
       await createUserWithEmailAndPassword(
         auth,
