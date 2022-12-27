@@ -18,3 +18,17 @@ export const client2 = applyCaseMiddleware(
   }),
   options
 );
+
+export const client3 = applyCaseMiddleware(
+  axios.create({
+    baseURL: "http://localhost:3001/api/v1/posts/",
+  }),
+  options
+);
+
+export const client4 = applyCaseMiddleware(
+  axios.create({
+    baseURL: "http://localhost:3001/api/v1/likes/",
+  }),
+  options
+);

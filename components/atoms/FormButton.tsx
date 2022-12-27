@@ -11,7 +11,14 @@ type Props = {
 const FormButton: FC<Props> = memo((props) => {
   const { children, type, color, size } = props;
   return (
-    <Button type={type} colorScheme={color} size={size} color="white">
+    <Button
+      type={type}
+      colorScheme={color}
+      size={size}
+      color="white"
+      fontSize={size}
+      fontWeight="bold"
+    >
       {children}
     </Button>
   );

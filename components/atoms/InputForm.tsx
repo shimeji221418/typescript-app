@@ -16,9 +16,6 @@ const InputForm: FC<Props> = memo((props) => {
     <InputGroup>
       <InputLeftAddon children={title} bg="gray.500" color="white" />
       <Input
-        id={title}
-        placeholder={title}
-        type={type}
         value={value}
         {...register(`${title}`, {
           required: true,
@@ -26,6 +23,9 @@ const InputForm: FC<Props> = memo((props) => {
             handleChange(e);
           },
         })}
+        id={title}
+        placeholder={title}
+        type={type}
         bg="white"
         name={title}
       />
