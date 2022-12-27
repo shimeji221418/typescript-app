@@ -6,4 +6,13 @@ export type GetUser = {
   icon: {
     url: string;
   };
+  posts?: {
+    id: number;
+    title: string;
+    content: string;
+    user_id: number;
+    image: {
+      url: string;
+    };
+  };
 };

@@ -8,3 +8,15 @@ export const signUpUser = (config: any) => {
 export const getUsers = (config: any) => {
   return client2.get<Array<GetUser>>("/", config);
 };
+
+export const getSelectUser = (id: string, config: any) => {
+  return client2.get<GetUser>(`/${id}`, config);
+};
+
+export const updateUser = (id: string, params: any, config: any) => {
+  return client2.patch(`/${id}`, params, config);
+};
+
+export const getCurrentUser = (config: any) => {
+  return client2.get("/current", config);
+};

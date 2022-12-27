@@ -80,7 +80,9 @@ export type AuthContextProps = {
   user: UserType;
 };
 
-const AuthContext = createContext<Partial<AuthContextProps>>({});
+const AuthContext = createContext<Partial<AuthContextProps>>(
+  {} as AuthContextProps
+);
 export const useAuthContext = () => useContext(AuthContext);
 
 export const AuthProvider: FC<Props> = ({ children }) => {

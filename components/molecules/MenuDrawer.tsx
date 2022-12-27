@@ -36,8 +36,7 @@ const MenuDrawer: FC<Props> = memo((props) => {
           MENU
         </DrawerHeader>
         <DrawerHeader as="h2" fontSize="2xl" p={0} color="cyan.700">
-          {auth.currentUser && auth.currentUser.displayName}
-          :Login
+          User: {auth.currentUser && auth.currentUser.displayName}
         </DrawerHeader>
         <DrawerBody mt={10} fontWeight="bold" color="cyan.400" fontSize="xl">
           <Stack spacing={8}>
