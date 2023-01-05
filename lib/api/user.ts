@@ -17,6 +17,10 @@ export const updateUser = (id: string, params: any, config: any) => {
   return client2.patch(`/${id}`, params, config);
 };
 
+export const deleteSelectUser = (id: string, config: any) => {
+  return client2.delete(`/${id}`, config);
+};
+
 export const getCurrentUser = (config: any) => {
   return client2.get("/current", config);
 };

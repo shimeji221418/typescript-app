@@ -104,7 +104,7 @@ const signUp = () => {
               />
               {errors.password && <Text>passwordが入力されていません</Text>}
               <FormButton type="submit" color="cyan" size="md">
-                Submit
+                SignUp
               </FormButton>
             </Stack>
           </form>

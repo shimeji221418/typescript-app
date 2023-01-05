@@ -1,10 +1,8 @@
-import { Box, Flex, Image, Input, Stack, Text } from "@chakra-ui/react";
 import { getAuth } from "firebase/auth";
 import { useRouter } from "next/router";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import FormButton from "../../components/atoms/FormButton";
-import InputForm from "../../components/atoms/InputForm";
+import PostForm from "../../components/molecules/PostForm";
 import { app } from "../../firebase";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { createPost } from "../../lib/api/post";
@@ -84,61 +82,13 @@ const New = () => {
   return (
     <>
       {!loading && (
-        <Flex align="start" justify="center" h="100vh">
-          <Box
-            w="lg"
-            bg="white"
-            shadow="md"
-            borderRadius="md"
-            textAlign="center"
-            p={5}
-            mt={20}
-          >
-            <Stack spacing={6}>
-              <Text as="h1" fontSize="4xl" fontWeight="bold" color="cyan.600">
-                New Post
-              </Text>
-              <form onSubmit={handleSubmit(handleonSubmit)}>
-                <Stack spacing={6}>
-                  <InputForm
-                    title="title"
-                    type="text"
-                    handleChange={handleChange}
-                  />
-                  {errors.title && <Text>emailが入力されていません</Text>}
-                  <InputForm
-                    title="content"
-                    type="text"
-                    handleChange={handleChange}
-                  />
-                  {errors.content && <Text>emailが入力されていません</Text>}
-                  <Input
-                    id="image"
-                    name="image"
-                    type="file"
-                    variant="unstyled"
-                    onChange={uploadImage}
-                  />
-                  {preview && (
-                    <Box>
-                      <Text as="p">Preview</Text>
-                      <Image
-                        src={preview}
-                        alt="preview img"
-                        width="200px"
-                        height="200px"
-                        m="auto"
-                      />
-                    </Box>
-                  )}
-                  <FormButton type="submit" color="cyan" size="lg">
-                    Post
-                  </FormButton>
-                </Stack>
-              </form>
-            </Stack>
-          </Box>
-        </Flex>
+        <PostForm
+          title="New Post"
+          handleChange={handleChange}
+          uploadImage={uploadImage}
+          handleonSubmit={handleonSubmit}
+          preview={preview}
+        />
       )}
     </>
   );
