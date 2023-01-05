@@ -34,7 +34,12 @@ const Users = () => {
         <Wrap spacing={6} m={6}>
           {users.map((user) => (
             <WrapItem key={user.id}>
-              <UserCard name={user.name} icon={user.icon} />
+              <UserCard
+                name={user.name}
+                icon={user.icon}
+                id={user.id}
+                email={user.email}
+              />
             </WrapItem>
           ))}
         </Wrap>

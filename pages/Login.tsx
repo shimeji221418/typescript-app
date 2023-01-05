@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react";
 import React, { ChangeEvent, useCallback, useState } from "react";
 import FormButton from "../components/atoms/FormButton";
 import InputForm from "../components/atoms/InputForm";
@@ -66,6 +66,12 @@ const Login = () => {
             <FormButton color="cyan" size="md" type="submit">
               Login
             </FormButton>
+            <Text textAlign="center">
+              ユーザー登録が済んでいない方は
+              <Link href="/signUp" color="cyan.600">
+                こちらから
+              </Link>
+            </Text>
           </Stack>
         </form>
       </Box>

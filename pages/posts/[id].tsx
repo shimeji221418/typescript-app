@@ -99,7 +99,7 @@ const Post = () => {
                 </Box>
                 <PrimaryButton
                   color="yellow"
-                  onClick={handleDelete}
+                  onClick={() => router.push(`/posts/edit/${selectPost!.id}`)}
                   fontcolor="black"
                 >
                   update
