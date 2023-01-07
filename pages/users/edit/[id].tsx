@@ -7,6 +7,11 @@ import FormButton from "../../../components/atoms/FormButton";
 import InputForm from "../../../components/atoms/InputForm";
 import { app } from "../../../firebase";
 import { getSelectUser, updateUser } from "../../../lib/api/user";
+import { useAuthContext } from "../../../provider/AuthProvider";
+import {
+  BaseClientWithAuthType,
+  baseClientWithAuth,
+} from "../../../lib/api/client";
 
 const Edit = () => {
   const auth = getAuth(app);
@@ -17,8 +22,8 @@ const Edit = () => {
     uid: "",
     icon: "",
   });
-  const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState<string>("");
+  const { loginUser, loading, setLoading } = useAuthContext();
 
   const {
     handleSubmit,
@@ -46,7 +51,8 @@ const Edit = () => {
   const createFormData = () => {
     const formData = new FormData();
     formData.append("user[name]", editUser.name);
-    formData.append("user[icon]", editUser.icon);
+    if (loginUser!.icon.url !== editUser.icon)
+      formData.append("user[icon]", editUser.icon);
 
     return formData;
   };
@@ -55,12 +61,26 @@ const Edit = () => {
     try {
       const id = router.query.id as string;
       const token = await auth.currentUser?.getIdToken(true);
+      const params: BaseClientWithAuthType = {
+        method: "patch",
+        url: `/users/${id}`,
+        token: token!,
+        data: createFormData(),
+        options: {
+          headers: {
+            "Context-Type": "multipart/form-data",
+          },
+        },
+      };
+      baseClientWithAuth(params);
+
       const config = {
         headers: {
           authorization: `Bearer ${token}`,
           "Context-Type": "multipart/form-data",
         },
       };
+
       const data = createFormData();
       await updateUser(id, data, config);
       router.push("/users");
@@ -80,6 +100,7 @@ const Edit = () => {
           if (auth.currentUser?.uid !== res.data.uid) {
             router.replace("/users");
           }
+          console.log(res);
           setEditUser({
             name: res.data.name,
             email: res.data.email,

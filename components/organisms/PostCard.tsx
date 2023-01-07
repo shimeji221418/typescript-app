@@ -9,12 +9,12 @@ import {
 } from "@chakra-ui/react";
 import React, { FC, memo } from "react";
 import { GetPost } from "../../types/api/post";
-import { GetUser } from "../../types/api/user";
+import { GetUser, LoginUserType } from "../../types/api/user";
 import LikeButton from "../atoms/LikeButton";
 
 type Props = {
   post: GetPost;
-  loginUser: GetUser | null;
+  loginUser: LoginUserType;
 };
 
 const PostCard: FC<Props> = memo((props) => {

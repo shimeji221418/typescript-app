@@ -1,108 +1,78 @@
-// import React, {
-//   createContext,
-//   FC,
-//   ReactNode,
-//   useContext,
-//   useEffect,
-//   useState,
-// } from "react";
-// import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-// import { app } from "../firebase";
-// import { Text } from "@chakra-ui/react";
-
-// export type UserType = User | null;
-
-// export type AuthContextProps = {
-//   user: User;
-// };
-
-// type Props = {
-//   children: ReactNode;
-// };
-
-// const AuthContext = createContext({});
-
-// export const useAuthContext = () => {
-//   return useContext(AuthContext);
-// };
-
-// export const AuthProvider: FC<Props> = ({ children }) => {
-//   const auth = getAuth(app);
-//   const [user, setUser] = useState<UserType>(null);
-//   const [loading, setLoading] = useState(true);
-//   const value = {
-//     user,
-//     loading,
-//   };
-
-//   useEffect(() => {
-//     const unsubscribed = onAuthStateChanged(auth, (user) => {
-//       setUser(user);
-//       setLoading(false);
-//     });
-//     return () => {
-//       unsubscribed();
-//     };
-//   }, []);
-
-//   if (loading) {
-//     return <Text>Loading...</Text>;
-//   } else {
-//     return (
-//       <AuthContext.Provider value={value}>
-//         {!loading && children}
-//       </AuthContext.Provider>
-//     );
-//   }
-// };
-
-// export default AuthProvider;
-
 import { Text } from "@chakra-ui/react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import React, {
   createContext,
+  Dispatch,
   FC,
   ReactNode,
+  SetStateAction,
   useContext,
   useEffect,
   useState,
 } from "react";
 import { app } from "../firebase";
+import { useRouter } from "next/router";
+import { LoginUserType } from "../types/api/user";
+import { getCurrentUser } from "../lib/api/user";
 
 type Props = {
   children: ReactNode;
 };
 
-type UserType = User | null;
-
 export type AuthContextProps = {
-  user: UserType;
+  loginUser: LoginUserType;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 };
 
-const AuthContext = createContext<Partial<AuthContextProps>>(
-  {} as AuthContextProps
-);
+const AuthContext = createContext<AuthContextProps>({
+  // loginUser: null,
+} as AuthContextProps);
 export const useAuthContext = () => useContext(AuthContext);
 
 export const AuthProvider: FC<Props> = ({ children }) => {
+  const router = useRouter();
   const auth = getAuth(app);
-  const [user, setUser] = useState<UserType>(null);
-  const [loading, setLoading] = useState(true);
+  const [loginUser, setLoginUser] = useState<LoginUserType>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const value = {
-    user,
+    loginUser,
     loading,
+    setLoading,
   };
 
+  const isLoginOrSingUpPage: boolean =
+    router.pathname === "/Login" || router.pathname === "/signUp";
+
   useEffect(() => {
-    const unsubscribed = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-      console.log(user);
-    });
-    return () => {
-      unsubscribed();
+    const onCurrentUser = async () => {
+      try {
+        const token = await auth.currentUser?.getIdToken(true);
+        const config = {
+          headers: { authorization: `Bearer ${token}` },
+          params: { uid: auth.currentUser?.uid },
+        };
+        const res = await getCurrentUser(config);
+        setLoginUser(res.data);
+        setLoading(false);
+      } catch (e: any) {
+        console.log(e);
+        setLoading(false);
+      }
     };
+
+    const unsubscribed = onAuthStateChanged(auth, (resultUser) => {
+      if (isLoginOrSingUpPage && resultUser) {
+        router.replace("/");
+      }
+      if (!isLoginOrSingUpPage && resultUser == null) {
+        router.replace("/Login");
+        return;
+      }
+      onCurrentUser();
+      console.log(resultUser);
+    });
+    unsubscribed();
   }, []);
 
   if (loading) {

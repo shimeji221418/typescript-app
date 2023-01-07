@@ -5,19 +5,29 @@ import UserCard from "../../components/organisms/UserCard";
 import { app } from "../../firebase";
 import { getUsers } from "../../lib/api/user";
 import { GetUser } from "../../types/api/user";
+import {
+  BaseClientWithAuthType,
+  baseClientWithAuth,
+} from "../../lib/api/client";
+import { useAuthContext } from "../../provider/AuthProvider";
 
 const Users = () => {
   const auth = getAuth(app);
   const [users, setUsers] = useState<Array<GetUser>>([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
+  const { loading, setLoading } = useAuthContext();
 
   useEffect(() => {
     const getUserLists = async () => {
       try {
         const currentUser = auth.currentUser;
         const token = await currentUser?.getIdToken(true);
-        const config = { headers: { authorization: `Bearer ${token}` } };
-        const res = await getUsers(config);
+        const params: BaseClientWithAuthType = {
+          method: "get",
+          url: "/users",
+          token: token!,
+        };
+        const res = await baseClientWithAuth(params);
         console.log(res.data);
         setUsers(res.data);
         setLoading(false);

@@ -3,15 +3,18 @@ import { useRouter } from "next/router";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import PostForm from "../../../components/molecules/PostForm";
 import { app } from "../../../firebase";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
+// import { useCurrentUser } from "../../../hooks/useCurrentUser";
 import { getPost, updatePost } from "../../../lib/api/post";
 import { GetPost } from "../../../types/api/post";
+import { useAuthContext } from "../../../provider/AuthProvider";
 
 const EditPost = () => {
   const auth = getAuth(app);
   const router = useRouter();
   const id = router.query.id as string;
-  const { onCurrentUser, loginUser } = useCurrentUser();
+  // const { onCurrentUser, loginUser } = useCurrentUser()
+  const { loginUser } = useAuthContext();
+
   const [editPost, setEditPost] = useState<
     Pick<GetPost, "title" | "content" | "image">
   >({
@@ -79,7 +82,7 @@ const EditPost = () => {
             },
           });
           setPreview(res.data.image.url);
-          await onCurrentUser();
+          // await onCurrentUser();
           setLoading(false);
         }
       } catch (e: any) {

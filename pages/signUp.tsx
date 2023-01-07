@@ -12,12 +12,13 @@ import {
 import { app } from "../firebase";
 import { NextRouter, useRouter } from "next/router";
 import { signUpUser } from "../lib/api/user";
+import { NewUserType } from "../types";
 
 const signUp = () => {
   const auth: Auth = getAuth(app);
   const router: NextRouter = useRouter();
 
-  const [newUser, setNewUser] = useState({
+  const [newUser, setNewUser] = useState<NewUserType>({
     name: "",
     email: "",
     password: "",
