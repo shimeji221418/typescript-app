@@ -6,11 +6,12 @@ import { useFormContext } from "react-hook-form";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "../firebase";
 import { useRouter } from "next/router";
+import { LoginFormType } from "../types";
 
 const Login = () => {
   const auth = getAuth(app);
   const router = useRouter();
-  const [loginUser, setLoginUser] = useState({
+  const [loginUser, setLoginUser] = useState<LoginFormType>({
     email: "",
     password: "",
   });

@@ -4,8 +4,9 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import PostForm from "../../components/molecules/PostForm";
 import { app } from "../../firebase";
-import { useCurrentUser } from "../../hooks/useCurrentUser";
+// import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { createPost } from "../../lib/api/post";
+import { useAuthContext } from "../../provider/AuthProvider";
 
 type Post = {
   title: string;
@@ -24,8 +25,8 @@ const New = () => {
     image: "",
   });
   const [preview, setPreview] = useState("");
-  const [loading, setLoading] = useState(true);
-  const { onCurrentUser, loginUser } = useCurrentUser();
+  // const { onCurrentUser, loginUser } = useCurrentUser();
+  const { loginUser, loading, setLoading } = useAuthContext();
 
   const {
     handleSubmit,
@@ -75,7 +76,7 @@ const New = () => {
   };
 
   useEffect(() => {
-    onCurrentUser();
+    // onCurrentUser();
     setLoading(false);
   }, []);
 

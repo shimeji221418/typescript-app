@@ -17,17 +17,18 @@ import LikeButton from "../../components/atoms/LikeButton";
 import PrimaryButton from "../../components/atoms/PrimaryButton";
 import CheckModal from "../../components/organisms/CheckModal";
 import { app } from "../../firebase";
-import { useCurrentUser } from "../../hooks/useCurrentUser";
+// import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { deletePost, getPost } from "../../lib/api/post";
 import { GetPost } from "../../types/api/post";
+import { useAuthContext } from "../../provider/AuthProvider";
 
 const Post = () => {
   const auth = getAuth(app);
   const router = useRouter();
   const id = router.query.id as string;
   const [selectPost, setSelectPost] = useState<GetPost | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { onCurrentUser, loginUser } = useCurrentUser();
+  // const { onCurrentUser, loginUser } = useCurrentUser();
+  const { loginUser, loading, setLoading } = useAuthContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const Post = () => {
           const config = { headers: { authorization: `Bearer ${token}` } };
           const res = await getPost(id, config);
           setSelectPost(res.data);
-          await onCurrentUser();
+          // await onCurrentUser();
           setLoading(false);
         }
       } catch (e: any) {

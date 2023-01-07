@@ -4,8 +4,6 @@ import theme from "../theme/theme";
 import { useForm, FormProvider } from "react-hook-form";
 import AuthProvider from "../provider/AuthProvider";
 import { useRouter } from "next/router";
-import { LoginUser } from "../components/templates/LoginUser";
-import { NotLoginUser } from "../components/templates/NotLoginUser";
 import { HeaderLayout } from "../components/templates/HeaderLayout";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -15,27 +13,27 @@ export default function App({ Component, pageProps }: AppProps) {
   if (router.pathname === "/Login" || router.pathname === "/signUp") {
     return (
       <AuthProvider>
-        <LoginUser>
-          <FormProvider {...methods}>
-            <ChakraProvider theme={theme}>
-              <Component {...pageProps} />
-            </ChakraProvider>
-          </FormProvider>
-        </LoginUser>
+        {/* <LoginUser> */}
+        <FormProvider {...methods}>
+          <ChakraProvider theme={theme}>
+            <Component {...pageProps} />
+          </ChakraProvider>
+        </FormProvider>
+        {/* </LoginUser> */}
       </AuthProvider>
     );
   } else {
     return (
       <AuthProvider>
-        <NotLoginUser>
-          <FormProvider {...methods}>
-            <ChakraProvider theme={theme}>
-              <HeaderLayout>
-                <Component {...pageProps} />
-              </HeaderLayout>
-            </ChakraProvider>
-          </FormProvider>
-        </NotLoginUser>
+        {/* <NotLoginUser> */}
+        <FormProvider {...methods}>
+          <ChakraProvider theme={theme}>
+            <HeaderLayout>
+              <Component {...pageProps} />
+            </HeaderLayout>
+          </ChakraProvider>
+        </FormProvider>
+        {/* </NotLoginUser> */}
       </AuthProvider>
     );
   }

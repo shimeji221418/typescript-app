@@ -17,17 +17,18 @@ import PrimaryButton from "../../components/atoms/PrimaryButton";
 import CheckModal from "../../components/organisms/CheckModal";
 import UserCard from "../../components/organisms/UserCard";
 import { app } from "../../firebase";
-import { useCurrentUser } from "../../hooks/useCurrentUser";
+// import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { deleteSelectUser, getSelectUser } from "../../lib/api/user";
 import { GetUser } from "../../types/api/user";
+import { useAuthContext } from "../../provider/AuthProvider";
 
 const User = () => {
   const auth = getAuth(app);
   const router = useRouter();
   const id = router.query.id as string;
   const [selectUser, setSelectUser] = useState<GetUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { onCurrentUser, loginUser } = useCurrentUser();
+  // const { onCurrentUser, loginUser } = useCurrentUser();
+  const { loginUser, loading, setLoading } = useAuthContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
@@ -37,7 +38,7 @@ const User = () => {
           const token = await auth.currentUser?.getIdToken(true);
           const config = { headers: { authorization: `Bearer ${token}` } };
           const res = await getSelectUser(id, config);
-          await onCurrentUser();
+          // await onCurrentUser();
           setSelectUser(res.data);
           setLoading(false);
         }
@@ -72,16 +73,16 @@ const User = () => {
 
   return (
     <>
-      {!loading && (
+      {!loading && selectUser != null && (
         <Flex justify="center" mt={10}>
           <Box>
             <UserCard
-              icon={selectUser!.icon}
-              id={selectUser!.id}
-              name={selectUser!.name}
-              email={selectUser!.email}
+              icon={selectUser.icon}
+              id={selectUser.id}
+              name={selectUser.name}
+              email={selectUser.email}
             />
-            {selectUser!.uid === loginUser!.uid && (
+            {selectUser.uid === loginUser!.uid && (
               <Box display="flex" justifyContent="center" m={2}>
                 <Box mr={2}>
                   <PrimaryButton onClick={onOpen} color="red">
