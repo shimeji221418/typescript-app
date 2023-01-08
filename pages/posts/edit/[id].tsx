@@ -5,24 +5,26 @@ import PostForm from "../../../components/molecules/PostForm";
 import { app } from "../../../firebase";
 // import { useCurrentUser } from "../../../hooks/useCurrentUser";
 import { getPost, updatePost } from "../../../lib/api/post";
-import { GetPost } from "../../../types/api/post";
+import { EditPostType, GetPost } from "../../../types/api/post";
 import { useAuthContext } from "../../../provider/AuthProvider";
+import {
+  BaseClientWithAuthType,
+  baseClientWithAuth,
+} from "../../../lib/api/client";
 
 const EditPost = () => {
   const auth = getAuth(app);
   const router = useRouter();
   const id = router.query.id as string;
   // const { onCurrentUser, loginUser } = useCurrentUser()
-  const { loginUser } = useAuthContext();
+  const { loginUser, loading, setLoading } = useAuthContext();
 
-  const [editPost, setEditPost] = useState<
-    Pick<GetPost, "title" | "content" | "image">
-  >({
+  const [editPost, setEditPost] = useState<EditPostType>({
+    id: 0,
     title: "",
     content: "",
-    image: { url: "" },
+    image: "",
   });
-  const [loading, setLoading] = useState(true);
   const [preview, setPreview] = useState("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -41,26 +43,34 @@ const EditPost = () => {
     setPreview(url);
   };
 
+  const loginUserPost = loginUser!.posts!.find(
+    (post) => post.id === editPost.id
+  );
+
   const createFormData = () => {
     const formData = new FormData();
     formData.append("post[title]", editPost.title);
     formData.append("post[content]", editPost.content);
-    formData.append("post[image]", editPost.image.url);
+    if (editPost.image !== loginUserPost!.image.url)
+      formData.append("post[image]", editPost.image);
     formData.append("user_id", loginUser!.id as any);
     return formData;
   };
 
   const handleonSubmit = async () => {
     try {
+      console.log(editPost);
       const token = await auth.currentUser?.getIdToken(true);
-      const config = {
-        headers: {
-          authorization: `Bearer ${token}`,
+      const params: BaseClientWithAuthType = {
+        method: "patch",
+        url: `/posts/${id}/`,
+        token: token!,
+        data: createFormData(),
+        options: {
           "Context-Type": "multipart/form-data",
         },
       };
-      const data = createFormData();
-      await updatePost(id, data, config);
+      await baseClientWithAuth(params);
       router.push("/posts");
     } catch (e: any) {
       console.log(e);
@@ -72,14 +82,17 @@ const EditPost = () => {
       try {
         if (router.isReady) {
           const token = await auth.currentUser?.getIdToken(true);
-          const config = { headers: { authorization: `Bearer ${token}` } };
-          const res = await getPost(id, config);
+          const params: BaseClientWithAuthType = {
+            method: "get",
+            url: `/posts/${id}`,
+            token: token!,
+          };
+          const res = await baseClientWithAuth(params);
           setEditPost({
+            id: res.data.id,
             title: res.data.title,
             content: res.data.content,
-            image: {
-              url: res.data.image.url,
-            },
+            image: res.data.image.url,
           });
           setPreview(res.data.image.url);
           // await onCurrentUser();
@@ -94,7 +107,7 @@ const EditPost = () => {
 
   return (
     <>
-      {!loading && (
+      {!loading && editPost && loginUser && (
         <>
           <PostForm
             title="Edit Post"

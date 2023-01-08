@@ -28,11 +28,10 @@ export const baseClientWithAuth = (params: BaseClientWithAuthType) => {
   const { method, url, token, data, options } = params;
 
   return baseClient.request({
-    headers: { authorization: `Bearer ${token}` },
+    headers: { authorization: `Bearer ${token}`, ...options },
     method,
     url,
     data,
-    ...options,
   });
 };
 

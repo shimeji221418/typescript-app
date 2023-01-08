@@ -5,13 +5,15 @@ import React, { useEffect, useState } from "react";
 import PostCard from "../../components/organisms/PostCard";
 import { app } from "../../firebase";
 // import { useCurrentUser } from "../../hooks/useCurrentUser";
-import { getPosts } from "../../lib/api/post";
 import { GetPost } from "../../types/api/post";
 import { useAuthContext } from "../../provider/AuthProvider";
+import {
+  BaseClientWithAuthType,
+  baseClientWithAuth,
+} from "../../lib/api/client";
 
 const Posts = () => {
   const auth = getAuth(app);
-  const router = useRouter();
   const [posts, setPosts] = useState<Array<GetPost>>([]);
   // const { onCurrentUser, loginUser } = useCurrentUser();
   const { loginUser, loading, setLoading } = useAuthContext();
@@ -20,8 +22,12 @@ const Posts = () => {
     const getPostList = async () => {
       try {
         const token = await auth.currentUser?.getIdToken(true);
-        const config = { headers: { authorization: `Bearer ${token}` } };
-        const res = await getPosts(config);
+        const params: BaseClientWithAuthType = {
+          method: "get",
+          url: `/posts/`,
+          token: token!,
+        };
+        const res = await baseClientWithAuth(params);
         setPosts(res.data);
         // await onCurrentUser();
         console.log(res.data);

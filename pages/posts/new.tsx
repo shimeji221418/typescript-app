@@ -5,8 +5,11 @@ import { useFormContext } from "react-hook-form";
 import PostForm from "../../components/molecules/PostForm";
 import { app } from "../../firebase";
 // import { useCurrentUser } from "../../hooks/useCurrentUser";
-import { createPost } from "../../lib/api/post";
 import { useAuthContext } from "../../provider/AuthProvider";
+import {
+  BaseClientWithAuthType,
+  baseClientWithAuth,
+} from "../../lib/api/client";
 
 type Post = {
   title: string;
@@ -61,24 +64,21 @@ const New = () => {
   const handleonSubmit = async () => {
     try {
       const token = await auth.currentUser?.getIdToken(true);
-      const config = {
-        headers: {
-          authorization: `Bearer ${token}`,
+      const params: BaseClientWithAuthType = {
+        method: "post",
+        url: "/posts/",
+        token: token!,
+        data: createFormData(),
+        options: {
           "Context-Type": "multipart/form-data",
         },
       };
-      const data = createFormData();
-      await createPost(data, config);
+      baseClientWithAuth(params);
       router.push("/posts");
     } catch (e: any) {
       console.log(e);
     }
   };
-
-  useEffect(() => {
-    // onCurrentUser();
-    setLoading(false);
-  }, []);
 
   return (
     <>
