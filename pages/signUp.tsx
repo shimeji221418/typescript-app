@@ -11,8 +11,11 @@ import {
 } from "firebase/auth";
 import { app } from "../firebase";
 import { NextRouter, useRouter } from "next/router";
-import { signUpUser } from "../lib/api/user";
 import { NewUserType } from "../types";
+import {
+  BaseClientWithoutAuthType,
+  baseClientWithoutAuth,
+} from "../lib/api/client";
 
 const signUp = () => {
   const auth: Auth = getAuth(app);
@@ -45,10 +48,15 @@ const signUp = () => {
     const request = async () => {
       await handleSignUp();
       if (auth.currentUser) {
-        const token = await auth.currentUser.getIdToken(true);
-        const config = { token };
         try {
-          await signUpUser(config);
+          const token = await auth.currentUser.getIdToken(true);
+          const data = { token };
+          const params: BaseClientWithoutAuthType = {
+            method: "post",
+            url: "/auth/registrations/",
+            data: data,
+          };
+          await baseClientWithoutAuth(params);
           router.push("/users");
         } catch (e: any) {
           console.log(e);

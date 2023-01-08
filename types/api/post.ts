@@ -16,3 +16,10 @@ export type GetPost = {
     };
   };
 };
+
+export type EditPostType = {
+  id: number;
+  title: string;
+  content: string;
+  image: string;
+};

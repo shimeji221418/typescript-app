@@ -21,6 +21,10 @@ import { app } from "../../firebase";
 import { deleteSelectUser, getSelectUser } from "../../lib/api/user";
 import { GetUser } from "../../types/api/user";
 import { useAuthContext } from "../../provider/AuthProvider";
+import {
+  BaseClientWithAuthType,
+  baseClientWithAuth,
+} from "../../lib/api/client";
 
 const User = () => {
   const auth = getAuth(app);
@@ -36,10 +40,14 @@ const User = () => {
       try {
         if (router.isReady) {
           const token = await auth.currentUser?.getIdToken(true);
-          const config = { headers: { authorization: `Bearer ${token}` } };
-          const res = await getSelectUser(id, config);
-          // await onCurrentUser();
+          const params: BaseClientWithAuthType = {
+            method: "get",
+            url: `/users/${id}`,
+            token: token!,
+          };
+          const res = await baseClientWithAuth(params);
           setSelectUser(res.data);
+          console.log(res.data);
           setLoading(false);
         }
       } catch (e: any) {
@@ -52,8 +60,12 @@ const User = () => {
   const handleDelete = async () => {
     try {
       const token = await auth.currentUser?.getIdToken(true);
-      const config = { headers: { authorization: `Bearer ${token}` } };
-      await deleteSelectUser(id, config);
+      const params: BaseClientWithAuthType = {
+        method: "delete",
+        url: `/users/${id}`,
+        token: token!,
+      };
+      await baseClientWithAuth(params);
       await deleteCurrentUser();
     } catch (e: any) {
       console.log(e);
@@ -73,7 +85,7 @@ const User = () => {
 
   return (
     <>
-      {!loading && selectUser != null && (
+      {!loading && selectUser && loginUser != null && (
         <Flex justify="center" mt={10}>
           <Box>
             <UserCard
@@ -82,7 +94,7 @@ const User = () => {
               name={selectUser.name}
               email={selectUser.email}
             />
-            {selectUser.uid === loginUser!.uid && (
+            {selectUser.uid === loginUser.uid && (
               <Box display="flex" justifyContent="center" m={2}>
                 <Box mr={2}>
                   <PrimaryButton onClick={onOpen} color="red">
@@ -104,13 +116,13 @@ const User = () => {
           </Box>
 
           <Box ml={5}>
-            {selectUser?.posts ? (
+            {selectUser.posts ? (
               <>
                 <Text mb={2} fontWeight="bold">
-                  {selectUser!.name}の投稿一覧
+                  {selectUser.name}の投稿一覧
                 </Text>
                 <Stack>
-                  {selectUser!.posts.map((post) => (
+                  {selectUser.posts!.map((post) => (
                     <Stack key={post.id}>
                       <Box
                         w="md"
@@ -120,11 +132,11 @@ const User = () => {
                         p={1}
                       >
                         <HStack>
-                          <Avatar src={selectUser!.icon.url} mr={2} />
+                          <Avatar src={selectUser.icon.url} mr={2} />
                           <Stack>
                             <Text>
-                              <Link href={`/users/${selectUser!.id}`}>
-                                {selectUser!.name}
+                              <Link href={`/users/${selectUser.id}`}>
+                                {selectUser.name}
                               </Link>
                             </Text>
                             <Text fontSize="lg" fontWeight="bold">
@@ -135,10 +147,10 @@ const User = () => {
                           </Stack>
                           <Spacer />
                           <Box>
-                            {loginUser?.id && (
+                            {loginUser.id && (
                               <LikeButton
                                 postId={post.id}
-                                userId={loginUser?.id}
+                                userId={loginUser.id}
                               />
                             )}
                           </Box>

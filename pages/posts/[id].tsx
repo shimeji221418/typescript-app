@@ -18,9 +18,12 @@ import PrimaryButton from "../../components/atoms/PrimaryButton";
 import CheckModal from "../../components/organisms/CheckModal";
 import { app } from "../../firebase";
 // import { useCurrentUser } from "../../hooks/useCurrentUser";
-import { deletePost, getPost } from "../../lib/api/post";
 import { GetPost } from "../../types/api/post";
 import { useAuthContext } from "../../provider/AuthProvider";
+import {
+  BaseClientWithAuthType,
+  baseClientWithAuth,
+} from "../../lib/api/client";
 
 const Post = () => {
   const auth = getAuth(app);
@@ -36,8 +39,12 @@ const Post = () => {
       try {
         if (router.isReady) {
           const token = await auth.currentUser?.getIdToken(true);
-          const config = { headers: { authorization: `Bearer ${token}` } };
-          const res = await getPost(id, config);
+          const params: BaseClientWithAuthType = {
+            method: "get",
+            url: `/posts/${id}`,
+            token: token!,
+          };
+          const res = await baseClientWithAuth(params);
           setSelectPost(res.data);
           // await onCurrentUser();
           setLoading(false);
@@ -53,8 +60,12 @@ const Post = () => {
     try {
       if (router.isReady) {
         const token = await auth.currentUser?.getIdToken(true);
-        const config = { headers: { authorization: `Bearer ${token}` } };
-        await deletePost(id, config);
+        const params: BaseClientWithAuthType = {
+          method: "delete",
+          url: `/posts/${id}`,
+          token: token!,
+        };
+        await baseClientWithAuth(params);
         router.push("/posts");
       }
     } catch (e: any) {
@@ -64,34 +75,34 @@ const Post = () => {
 
   return (
     <>
-      {!loading && (
+      {!loading && selectPost && loginUser != null && (
         <Flex justify="center" align="center" mt={10}>
           <Box w="xl" bg="white" shadow="lg" borderRadius="md" p={4} pb={8}>
             <HStack align="top">
-              <Avatar src={selectPost!.user.icon.url} mr={2} size="lg" />
+              <Avatar src={selectPost.user.icon.url} mr={2} size="lg" />
               <Stack>
                 <Text fontSize="xl">
-                  <Link href={`/users/${selectPost!.user.id}`}>
-                    {selectPost!.user.name}
+                  <Link href={`/users/${selectPost.user.id}`}>
+                    {selectPost.user.name}
                   </Link>
                 </Text>
                 <Text fontSize="2xl" fontWeight="bold">
-                  {selectPost!.content}
+                  {selectPost.content}
                 </Text>
-                {selectPost!.image ? (
-                  <Image src={selectPost!.image.url} w="100%" h="100%" />
+                {selectPost.image ? (
+                  <Image src={selectPost.image.url} w="100%" h="100%" />
                 ) : (
                   ""
                 )}
               </Stack>
               <Spacer />
               <Box>
-                {loginUser?.id && (
-                  <LikeButton postId={selectPost!.id} userId={loginUser?.id} />
+                {loginUser.id && (
+                  <LikeButton postId={selectPost.id} userId={loginUser.id} />
                 )}
               </Box>
             </HStack>
-            {selectPost?.user.uid === loginUser?.uid && (
+            {selectPost.user.uid === loginUser.uid && (
               <Box display="flex" justifyContent="center" mt={4}>
                 <Box mr={1}>
                   <PrimaryButton color="red" onClick={onOpen}>
@@ -100,7 +111,7 @@ const Post = () => {
                 </Box>
                 <PrimaryButton
                   color="yellow"
-                  onClick={() => router.push(`/posts/edit/${selectPost!.id}`)}
+                  onClick={() => router.push(`/posts/edit/${selectPost.id}`)}
                   fontcolor="black"
                 >
                   update

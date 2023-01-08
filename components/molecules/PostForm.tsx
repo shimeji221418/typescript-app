@@ -52,7 +52,7 @@ const PostForm: FC<Props> = memo((props) => {
                 value={value}
                 handleChange={handleChange}
               />
-              {errors.title && <Text>emailが入力されていません</Text>}
+              {errors.title && <Text>titleが入力されていません</Text>}
               <InputForm
                 title="content"
                 type="text"

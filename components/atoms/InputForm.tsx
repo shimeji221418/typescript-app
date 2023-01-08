@@ -13,23 +13,27 @@ const InputForm: FC<Props> = memo((props) => {
   const { title, type, value, handleChange } = props;
   const { register } = useFormContext();
   return (
-    <InputGroup>
-      <InputLeftAddon children={title} bg="gray.500" color="white" />
-      <Input
-        value={value}
-        {...register(`${title}`, {
-          required: true,
-          onChange: (e) => {
-            handleChange(e);
-          },
-        })}
-        id={title}
-        placeholder={title}
-        type={type}
-        bg="white"
-        name={title}
-      />
-    </InputGroup>
+    <>
+      {value && (
+        <InputGroup>
+          <InputLeftAddon children={title} bg="gray.500" color="white" />
+          <Input
+            value={value}
+            {...register(`${title}`, {
+              required: true,
+              onChange: (e) => {
+                handleChange(e);
+              },
+            })}
+            id={title}
+            placeholder={title}
+            type={type}
+            bg="white"
+            name={title}
+          />
+        </InputGroup>
+      )}
+    </>
   );
 });
 

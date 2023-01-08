@@ -12,11 +12,12 @@ import {
   BaseClientWithAuthType,
   baseClientWithAuth,
 } from "../../../lib/api/client";
+import { EditUserType } from "../../../types";
 
 const Edit = () => {
   const auth = getAuth(app);
   const router: NextRouter = useRouter();
-  const [editUser, setEditUser] = useState({
+  const [editUser, setEditUser] = useState<EditUserType>({
     name: "",
     email: "",
     uid: "",
@@ -67,22 +68,10 @@ const Edit = () => {
         token: token!,
         data: createFormData(),
         options: {
-          headers: {
-            "Context-Type": "multipart/form-data",
-          },
-        },
-      };
-      baseClientWithAuth(params);
-
-      const config = {
-        headers: {
-          authorization: `Bearer ${token}`,
           "Context-Type": "multipart/form-data",
         },
       };
-
-      const data = createFormData();
-      await updateUser(id, data, config);
+      await baseClientWithAuth(params);
       router.push("/users");
     } catch (e: any) {
       console.log(e);
@@ -95,8 +84,12 @@ const Edit = () => {
         if (router.isReady) {
           const id = router.query.id as string;
           const token = await auth.currentUser?.getIdToken(true);
-          const config = { headers: { authorization: `Bearer ${token}` } };
-          const res = await getSelectUser(id, config);
+          const params: BaseClientWithAuthType = {
+            method: "get",
+            url: `/users/${id}`,
+            token: token!,
+          };
+          const res = await baseClientWithAuth(params);
           if (auth.currentUser?.uid !== res.data.uid) {
             router.replace("/users");
           }
@@ -118,7 +111,7 @@ const Edit = () => {
   }, []);
   return (
     <>
-      {!loading && (
+      {!loading && editUser != null && (
         <Flex align="start" justify="center" h="100vh">
           <Box
             w="lg"
@@ -141,7 +134,7 @@ const Edit = () => {
                     value={editUser.name}
                     handleChange={handleChange}
                   />
-                  {errors.name && <Text>emailが入力されていません</Text>}
+                  {errors.name && <Text>nameが入力されていません</Text>}
                   <Input
                     id="icon"
                     name="icon"
